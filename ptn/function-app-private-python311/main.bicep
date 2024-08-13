@@ -1,3 +1,4 @@
+@maxLength(15)
 param baseName string
 param subnetResourceId string
 
