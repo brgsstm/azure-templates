@@ -19,7 +19,10 @@ This template deploys a private Python 3.11 Azure Function App running on a Linu
 ---
 
 `subnetResourceId` should be formatted:
-     `/subscriptions/<subscriptionId>/resourceGroups/<resourceGroupName>/providers/Microsoft.Network/virtualNetworks/<vnetName>/subnets/<subnetName>`
+
+```bicep
+/subscriptions/<subscriptionId>/resourceGroups/<resourceGroupName>/providers/Microsoft.Network/virtualNetworks/<vnetName>/subnets/<subnetName>
+```
 
 ## Considerations
 
