@@ -5,6 +5,10 @@ param databricksPublicSubnetName string = 'databricksPublic'
 param privateEndpointSubnetName string = 'privateEndpoints'
 param privateDnsAutomated bool = false
 
+var virtualNetworkResourceIdInUse = (virtualNetworkResourceId == '')
+  ? virtualNetwork.outputs.resourceId
+  : existingVirtualNetwork.id
+
 module databricksWorkspace 'br/public:avm/res/databricks/workspace:0.6.0' = {
   name: 'databricksWorkspaceDeployment'
   params: {
@@ -17,7 +21,7 @@ module databricksWorkspace 'br/public:avm/res/databricks/workspace:0.6.0' = {
     requiredNsgRules: 'NoAzureDatabricksRules' // required on no public access workspaces
     customPrivateSubnetName: databricksPrivateSubnetName
     customPublicSubnetName: databricksPublicSubnetName
-    customVirtualNetworkResourceId: virtualNetwork.outputs.resourceId
+    customVirtualNetworkResourceId: virtualNetworkResourceIdInUse
     disablePublicIp: true
     natGatewayName: 'db-nat-gw'
     prepareEncryption: false // looks to be associated with the storage account managed identity
@@ -27,9 +31,6 @@ module databricksWorkspace 'br/public:avm/res/databricks/workspace:0.6.0' = {
 }
 
 var privateEndpointName = '${workspaceName}-api-pe'
-var virtualNetworkResourceIdInUse = (virtualNetworkResourceId == '')
-  ? virtualNetwork.outputs.resourceId
-  : existingVirtualNetwork.id
 module databricksPrivateEndpoint 'br/public:avm/res/network/private-endpoint:0.7.0' = {
   name: 'databricksPrivateEndpointDeployment'
   params: {
@@ -188,7 +189,7 @@ module networkSecurityGroup 'br/public:avm/res/network/network-security-group:0.
 module privateDnsZone 'br/public:avm/res/network/private-dns-zone:0.5.0' = if ((virtualNetworkResourceId == '' && !privateDnsAutomated) || (virtualNetworkResourceId != '' && !privateDnsAutomated)) {
   name: 'privateDnsZoneDeployment'
   params: {
-    name: 'privatelink.azure-databricks.net'
+    name: 'privatelink.azuredatabricks.net'
     virtualNetworkLinks: [
       {
         name: '${virtualNetwork.outputs.name}-link'
